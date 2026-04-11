@@ -19,4 +19,7 @@ public interface InvoiceRepository {
     Optional<byte[]> findPdfContent(UUID invoiceId);
 
     void savePdfContent(UUID invoiceId, byte[] content);
+
+    Optional<Invoice> findByExternalId(String externalId);
+
 }

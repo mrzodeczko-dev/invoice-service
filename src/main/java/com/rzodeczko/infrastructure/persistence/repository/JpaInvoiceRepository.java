@@ -12,6 +12,8 @@ import java.util.UUID;
 public interface JpaInvoiceRepository extends JpaRepository<InvoiceEntity, UUID> {
     boolean existsByOrderId(UUID orderId);
 
+    Optional<InvoiceEntity> findByExternalId(String externalId);
+
     @Query("select i.pdfContent from InvoiceEntity i where i.id = :id")
     Optional<byte[]> findPdfContentById(@Param("id") UUID id);
 

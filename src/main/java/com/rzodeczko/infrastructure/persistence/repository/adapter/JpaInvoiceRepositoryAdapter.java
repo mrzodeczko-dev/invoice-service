@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.cfg.MapperBuilder;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -21,6 +22,7 @@ public class JpaInvoiceRepositoryAdapter implements InvoiceRepository {
 
     private final JpaInvoiceRepository jpaInvoiceRepository;
     private final InvoiceMapper invoiceMapper;
+    private final MapperBuilder mapperBuilder;
 
     @Override
     @Transactional
@@ -68,4 +70,15 @@ public class JpaInvoiceRepositoryAdapter implements InvoiceRepository {
     public void savePdfContent(UUID invoiceId, byte[] content) {
         jpaInvoiceRepository.updatePdfContent(invoiceId, content);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Invoice> findByExternalId(String externalId) {
+        return jpaInvoiceRepository
+                .findByExternalId(externalId)
+                .map(invoiceMapper::toDomain);
+
+    }
+
+
 }

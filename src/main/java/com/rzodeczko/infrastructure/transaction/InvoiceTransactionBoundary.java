@@ -46,4 +46,9 @@ public class InvoiceTransactionBoundary {
     public void savePdfContent(UUID invoiceId, byte[] content) {
         invoiceRepository.savePdfContent(invoiceId, content);
     }
+
+    @Transactional(readOnly = true)
+    public Optional<Invoice> findByExternalId(String externalId) {
+        return invoiceRepository.findByExternalId(externalId);
+    }
 }

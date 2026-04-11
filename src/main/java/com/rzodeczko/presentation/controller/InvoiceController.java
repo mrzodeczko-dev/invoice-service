@@ -68,7 +68,7 @@ public class InvoiceController {
      * @param id the UUID of the invoice
      * @return the PDF file as a byte array in the response body, with appropriate headers to prevent caching and ensure secure download
      */
-    @GetMapping("/{id}/pdf")
+    @GetMapping(value = "/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> getInvoicePdf(@PathVariable UUID id) {
         byte[] pdfContent = getInvoicePdfUseCase.getPdf(id);
 
@@ -76,6 +76,7 @@ public class InvoiceController {
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("attachment", "invoice_" + id + ".pdf");
 
+        headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
         headers.setCacheControl("no-cache, no-store, must-revalidate");
         headers.setPragma("no-cache");
         headers.setExpires(0);
