@@ -21,19 +21,22 @@ import java.util.concurrent.Executors;
 @EnableConfigurationProperties({FakturowniaProperties.class, SwaggerCorsProperties.class})
 public class BeanConfiguration {
 
+
     @Bean
     public WebMvcConfigurer corsConfigurer(SwaggerCorsProperties props) {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(props.getSwaggerOrigin())
+                        .allowedOrigins(props.getAllowedOrigins())
                         .allowedMethods("GET", "POST", "OPTIONS")
                         .allowedHeaders("*")
                         .maxAge(3600);
+
             }
         };
     }
+
 
     @Bean
     public RestClientCustomizer restClientCustomizer() {

@@ -31,6 +31,8 @@ fakturownia:
   url: ${INVOICES_URL}
   token: ${INVOICES_TOKEN}
 
-app:
+http:
   cors:
-    swagger-origin: "http://localhost:${SWAGGER_UI_PORT}"
+    swagger-ui:
+      enabled: true
+      allowed-origins: "http://localhost:${SWAGGER_UI_PORT}"
