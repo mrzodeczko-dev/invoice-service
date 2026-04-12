@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="codernoone">
+        <createTable tableName="payments">
+            <column name="id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="VARCHAR(36)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uq_payments_order_id"/>
+            </column>
+            <column name="external_transaction_id" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uq_payments_external_transaction_id"/>
+            </column>
+            <column name="amount" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="redirect_url" type="VARCHAR(512)"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="codernoone">
+        <createTable tableName="outbox_events">
+            <column name="id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payment_id" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retry_count" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processed_at" type="TIMESTAMP"/>
+            <column name="version" type="BIGINT"/>
+        </createTable>
+
+        <createIndex tableName="outbox_events" indexName="idx_outbox_status">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="3" author="codernoone">
+        <createTable tableName="shedlock">
+            <column name="name" type="VARCHAR(64)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_shedlock"/>
+            </column>
+            <column name="lock_until" type="TIMESTAMP(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="locked_at" type="TIMESTAMP(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="locked_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
