@@ -396,5 +396,5 @@ JVM is tuned for container environments: `-XX:+UseContainerSupport`, `-XX:MaxRAM
 
 [↑ Back to top](#toc)
 
-Designed and implemented by **Mateusz Rzodeczko**.  
-Other projects: [github.com/CoderNOONE](https://github.com/CoderNOONE)
+Designed and implemented by **Michał Rzodeczko**.  
+Other projects: [github.com/mrzodeczko-dev](https://github.com/mrzodeczko-dev)
