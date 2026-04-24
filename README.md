@@ -3,6 +3,7 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![codecov](https://codecov.io/gh/mrzodeczko-dev/invoice-service/branch/master/graph/badge.svg)](https://codecov.io/gh/mrzodeczko-dev/invoice-service)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <a id="toc"></a>
@@ -385,8 +386,6 @@ JVM is tuned for container environments: `-XX:+UseContainerSupport`, `-XX:MaxRAM
 [↑ Back to top](#toc)
 
 - **Testcontainers** — ephemeral MySQL instances in integration tests, fully isolated and reproducible without external DB dependencies.
-- **Resilience4j** — Retry + Circuit Breaker on Fakturownia RestClient calls to handle transient API unavailability gracefully.
-- **CI/CD Pipeline** — GitHub Actions workflow automating build → test → Docker image push with JaCoCo coverage gate.
 - **Distributed Tracing** — OpenTelemetry integration with Tempo/Jaeger for end-to-end request visibility.
 
 ---
@@ -396,5 +395,5 @@ JVM is tuned for container environments: `-XX:+UseContainerSupport`, `-XX:MaxRAM
 
 [↑ Back to top](#toc)
 
-Designed and implemented by **Mateusz Rzodeczko**.  
-Other projects: [github.com/CoderNOONE](https://github.com/CoderNOONE)
+Designed and implemented by **Michał Rzodeczko**.  
+Other projects: [github.com/mrzodeczko-dev](https://github.com/mrzodeczko-dev)
