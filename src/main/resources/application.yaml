@@ -30,8 +30,15 @@ fakturownia:
   url: ${INVOICES_URL:http://localhost:3000}
   token: ${INVOICES_TOKEN:test-token}
 
-http:
-  cors:
-    swagger-ui:
-      enabled: true
-      allowed-origins: "http://localhost:${SWAGGER_UI_PORT:8080}"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_API_DOCS_SWAGGER_ENABLED:false}
+  swagger-ui:
+    enabled: ${SPRINGDOC_API_DOCS_SWAGGER_ENABLED:false}

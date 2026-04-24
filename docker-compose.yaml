@@ -60,7 +60,7 @@ services:
       SERVER_PORT: ${INVOICE_SERVICE_PORT}
       INVOICES_URL: ${INVOICE_SERVICE_FAKTUROWNIA_URL}
       INVOICES_TOKEN: ${INVOICE_SERVICE_FAKTUROWNIA_TOKEN}
-      SWAGGER_UI_PORT: ${SWAGGER_UI_PORT}
+      SPRINGDOC_API_DOCS_SWAGGER_ENABLED: ${SPRINGDOC_API_DOCS_SWAGGER_ENABLED}
     deploy:
       resources:
         limits:
@@ -73,32 +73,6 @@ services:
         max-file: "3"
     networks:
       - mr-network
-
-  # --------------------------------------------------------------------------------------------------------------------
-  # SWAGGER UI
-  # --------------------------------------------------------------------------------------------------------------------
-  swagger-ui-invoice:
-    image: swaggerapi/swagger-ui:v5.32.2
-    restart: unless-stopped
-    profiles:
-      - docs
-    ports:
-      - "${SWAGGER_UI_PORT}:8080"
-    environment:
-      # Passed into the container shell — sed substitutes this into openapi.template.yaml at startup
-      SWAGGER_JSON: /tmp/openapi.yaml
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        sed "s|{{ INVOICE_SERVICE_PORT }}|$INVOICE_SERVICE_PORT|g" \
-          /tmp/openapi.template.yaml > /tmp/openapi.yaml
-        exec /docker-entrypoint.sh nginx -g 'daemon off;'
-    volumes:
-      - ./openapi.template.yaml:/tmp/openapi.template.yaml:ro
-    networks:
-      - mr-network
-
 
 volumes:
   invoice-mysql:
