@@ -38,6 +38,14 @@ webhooks-tokens:
       update-invoice-api:
         fakturownia: ${INVOICE_SERVICE_WEBHOOK_TOKEN:secret}
 
+webhook:
+  clients:
+    fakturownia:
+      enabled: true # Set to false to temporarily disable this client if it becomes problematic
+      token: ${INVOICE_SERVICE_WEBHOOK_TOKEN:secret}
+      requests-per-minute: 60
+
+
 management:
   endpoints:
     web:

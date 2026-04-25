@@ -1,5 +1,6 @@
 package com.rzodeczko.infrastructure.webhook.access.ratelimiter;
 
+import com.rzodeczko.infrastructure.configuration.properties.WebhookClientsConfig;
 import com.rzodeczko.infrastructure.webhook.access.exception.WebhookRateLimitExceededException;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.ConsumptionProbe;
@@ -8,25 +9,30 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 @Component
 @RequiredArgsConstructor
 public class Bucket4jRateLimiter implements ClientRateLimiter {
 
-    private static final long LIMIT = 60;
-
     private final ProxyManager<String> proxyManager;
+    private final WebhookClientsConfig webhookClientsConfig;
 
     @Override
     public void check(String clientId) {
         String key = "webhook:ratelimit:" + clientId;
+        WebhookClientsConfig.ClientConfig clientConfig = webhookClientsConfig.clients().get(clientId);
+        if (Objects.isNull(clientConfig) || clientConfig.requestsPerMinute() == 0) {
+            return; // No rate limit configured for this client
+        }
 
+        int rateLimit = clientConfig.requestsPerMinute();
         Supplier<BucketConfiguration> configurationSupplier = () ->
                 BucketConfiguration.builder()
                         .addLimit(limit -> limit
-                                .capacity(LIMIT)
-                                .refillIntervally(LIMIT, Duration.ofMinutes(1))
+                                .capacity(rateLimit)
+                                .refillIntervally(rateLimit, Duration.ofMinutes(1))
                         )
                         .build();
 

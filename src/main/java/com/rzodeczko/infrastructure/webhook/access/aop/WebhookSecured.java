@@ -9,6 +9,4 @@ import java.lang.annotation.*;
 @Documented
 public @interface WebhookSecured {
     TrustedWebhookClient[] value();
-
-    boolean rateLimited() default false;
 }

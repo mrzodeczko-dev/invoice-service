@@ -63,7 +63,7 @@ public class InvoiceController {
     /**
      * Retrieves the PDF file for the invoice with the specified UUID.
      * <p>
-     * <b>Security rationale:</b> The system uses UUIDs from the database instead of sequential external IDs (e.g., from Fakturownia) to prevent enumeration attacks. Sequential IDs can be easily guessed, potentially exposing sensitive invoice data of other clients. UUIDs are cryptographically secure and not guessable.
+     * <b>Security rationale:</b> The system uses UUIDs from the database instead of sequential external IDs (e.g., from Fakturownia) to prevent enumeration attacks. Sequential IDs can be easily guessed, potentially exposing sensitive invoice data of other configMap. UUIDs are cryptographically secure and not guessable.
      * <p>
      * <b>API stability:</b> Using UUIDs decouples the API from the external provider's identifier format. This ensures that changing the invoice provider does not require changes to the API or frontend, maintaining backward compatibility and stability.
      *

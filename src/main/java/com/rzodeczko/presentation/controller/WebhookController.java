@@ -21,7 +21,7 @@ public class WebhookController {
     private final HandleInvoiceWebhookUseCase handleInvoiceWebhookUseCase;
 
     @PostMapping("/fakturownia/invoices/update")
-    @WebhookSecured(value = TrustedWebhookClient.FAKTUROWNIA, rateLimited = true)
+    @WebhookSecured(value = TrustedWebhookClient.FAKTUROWNIA)
     public ResponseEntity<Void> handleInvoiceUpdated(
             @RequestBody FakturowniaWebhookDto payload
     ) {

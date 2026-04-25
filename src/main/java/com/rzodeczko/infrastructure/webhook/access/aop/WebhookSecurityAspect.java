@@ -31,16 +31,14 @@ public class WebhookSecurityAspect {
         boolean isTrustedClient = actualClientOpt.isPresent() &&
                 Arrays.stream(webhookSecured.value())
                         .anyMatch(allowedClient ->
-                                allowedClient.getClientId().equalsIgnoreCase(actualClientOpt.get().getClientId()));
+                                allowedClient.getClientId().equals(actualClientOpt.get().getClientId()));
         if (!isTrustedClient) {
             throw new UnauthorizedWebhookAccessException(
                     "Webhook client '%s' is not allowed for this endpoint".formatted(payload.appName())
             );
         }
 
-        accessVerifier.verifySharedSecret(payload.appName(), payload.apiToken());
-        if (webhookSecured.rateLimited()) {
-            bucket4jRateLimiter.check(payload.appName());
-        }
+        accessVerifier.verifyEnabledAndSharedSecret(payload.appName(), payload.apiToken());
+        bucket4jRateLimiter.check(payload.appName());
     }
 }
