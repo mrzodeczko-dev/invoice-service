@@ -9,6 +9,7 @@ import com.rzodeczko.presentation.dto.CreateInvoiceRequestDto;
 import com.rzodeczko.presentation.dto.CreateInvoiceResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,6 +32,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/invoices")
 @RequiredArgsConstructor
+@Slf4j
 public class InvoiceController {
     private final GenerateInvoiceUseCase generateInvoiceUseCase;
     private final GetInvoicePdfUseCase getInvoicePdfUseCase;
@@ -38,7 +40,7 @@ public class InvoiceController {
     @PostMapping
     public ResponseEntity<CreateInvoiceResponseDto> createInvoice(
             @RequestBody @Valid CreateInvoiceRequestDto request) {
-        System.out.println("Received create invoice request: " + request);
+        log.info("Received create invoice request: {}", request);
         var items = request
                 .items()
                 .stream()
