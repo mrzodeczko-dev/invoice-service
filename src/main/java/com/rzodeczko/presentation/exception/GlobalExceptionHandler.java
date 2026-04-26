@@ -4,13 +4,11 @@ package com.rzodeczko.presentation.exception;
 import com.rzodeczko.application.exception.EmptyPdfResponseException;
 import com.rzodeczko.application.exception.ExternalTaxSystemException;
 import com.rzodeczko.application.exception.InvoiceConcurrentModificationException;
-import com.rzodeczko.application.exception.InvoiceVisibilityPendingException;
 import com.rzodeczko.domain.exception.InvoiceAlreadyExistsException;
 import com.rzodeczko.domain.exception.InvoiceNotIssuedException;
 import com.rzodeczko.domain.exception.ResourceNotFoundException;
 import com.rzodeczko.infrastructure.webhook.access.exception.UnauthorizedWebhookAccessException;
 import com.rzodeczko.infrastructure.webhook.access.exception.WebhookRateLimitExceededException;
-import com.rzodeczko.presentation.dto.CreateInvoiceResponseDto;
 import com.rzodeczko.presentation.dto.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -38,14 +36,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponseDto(400, "Validation Failed", message));
-    }
-
-    @ExceptionHandler(InvoiceVisibilityPendingException.class)
-    public ResponseEntity<CreateInvoiceResponseDto> handle(InvoiceVisibilityPendingException e) {
-        log.warn("Invoice visibility pending: {}", e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
-                .body(new CreateInvoiceResponseDto("Pending Confirmation"));
     }
 
     @ExceptionHandler(UnauthorizedWebhookAccessException.class)
