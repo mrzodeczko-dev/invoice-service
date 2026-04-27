@@ -26,6 +26,11 @@ databaseChangeLog:
                   type: DECIMAL(19,2)
                   constraints:
                     nullable: false
+              - column:
+                  name: tax_rate
+                  type: DECIMAL(5,2)
+                  constraints:
+                    nullable: false
         - addForeignKeyConstraint:
             baseTableName: invoice_items
             baseColumnNames: invoice_id
