@@ -1,5 +1,6 @@
 package com.rzodeczko.domain.model;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -15,9 +16,10 @@ public class Invoice {
     private String externalId;
     private InvoiceStatus status;
     private final List<InvoiceItem> items;
+    private final Instant createdAt;
 
     public Invoice(UUID id, UUID orderId, String taxId, String buyerName, List<InvoiceItem> items) {
-        this(id, orderId, taxId, buyerName, null, InvoiceStatus.DRAFT, items);
+        this(id, orderId, taxId, buyerName, null, InvoiceStatus.DRAFT, items, null);
     }
 
     private Invoice(
@@ -27,7 +29,8 @@ public class Invoice {
             String buyerName,
             String externalId,
             InvoiceStatus status,
-            List<InvoiceItem> items
+            List<InvoiceItem> items,
+            Instant createdAt
     ) {
         this.id = id;
         this.orderId = orderId;
@@ -36,6 +39,7 @@ public class Invoice {
         this.externalId = externalId;
         this.status = status;
         this.items = items != null ? List.copyOf(items) : Collections.emptyList();
+        this.createdAt = createdAt;
         validate();
     }
 
@@ -46,9 +50,10 @@ public class Invoice {
             String buyerName,
             String externalId,
             InvoiceStatus status,
-            List<InvoiceItem> items
+            List<InvoiceItem> items,
+            Instant createdAt
     ) {
-        return new Invoice(id, orderId, taxId, buyerName, externalId, status, items);
+        return new Invoice(id, orderId, taxId, buyerName, externalId, status, items, createdAt);
     }
 
     public void markAsIssuing() {
@@ -91,7 +96,7 @@ public class Invoice {
     }
 
     public boolean isIssueUnknown() {
-        return this.status == InvoiceStatus.ISSUING;
+        return this.status == InvoiceStatus.ISSUE_UNKNOWN;
     }
 
     private void validate() {
@@ -149,6 +154,10 @@ public class Invoice {
         return items;
     }
 
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
     public void markAsIssueFailed() {
         this.status = InvoiceStatus.ISSUE_FAILED;
     }
@@ -158,4 +167,3 @@ public class Invoice {
         externalId = null;
     }
 }
-

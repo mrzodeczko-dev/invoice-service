@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +38,8 @@ class InvoiceMapperIT {
                 new InvoiceItem("Item1", 1, BigDecimal.TEN, TaxRate.of(taxRate)),
                 new InvoiceItem("Item2", 2, BigDecimal.valueOf(20), TaxRate.of(8))
         );
-        Invoice domain = Invoice.restore(id, orderId, "123-456", "John Doe", "ext-123", InvoiceStatus.ISSUED, items);
+        Instant createdAt = Instant.parse("2026-04-27T22:00:00Z");
+        Invoice domain = Invoice.restore(id, orderId, "123-456", "John Doe", "ext-123", InvoiceStatus.ISSUED, items, createdAt);
 
         // when
         InvoiceEntity entity = invoiceMapper.toEntity(domain);
@@ -67,6 +69,7 @@ class InvoiceMapperIT {
         List<InvoiceItemEmbeddable> items = List.of(
                 new InvoiceItemEmbeddable("Item1", 1, BigDecimal.TEN, taxRate)
         );
+        Instant createdAt = Instant.parse("2026-04-27T22:00:00Z");
         InvoiceEntity entity = InvoiceEntity.builder()
                 .id(id)
                 .orderId(orderId)
@@ -75,6 +78,7 @@ class InvoiceMapperIT {
                 .externalId("ext-123")
                 .status("ISSUED")
                 .items(items)
+                .createdAt(createdAt)
                 .build();
 
         // when
@@ -87,6 +91,7 @@ class InvoiceMapperIT {
         assertThat(domain.getBuyerName()).isEqualTo("John Doe");
         assertThat(domain.getExternalId()).isEqualTo("ext-123");
         assertThat(domain.getStatus()).isEqualTo(InvoiceStatus.ISSUED);
+        assertThat(domain.getCreatedAt()).isEqualTo(createdAt);
         assertThat(domain.getItems()).hasSize(1);
         
         InvoiceItem firstItem = domain.getItems().get(0);
@@ -105,8 +110,9 @@ class InvoiceMapperIT {
                 new InvoiceItem("Item 2", 1, new BigDecimal("50.00"), TaxRate.of(8))
         );
         Invoice originalDomain = Invoice.restore(
-                id, orderId, "PL1234567890", "Test Buyer Sp. z o.o.", 
-                "FA/2023/001", InvoiceStatus.ISSUED, items
+                id, orderId, "PL1234567890", "Test Buyer Sp. z o.o.",
+                "FA/2023/001", InvoiceStatus.ISSUED, items,
+                Instant.parse("2026-04-27T22:00:00Z")
         );
 
         // when

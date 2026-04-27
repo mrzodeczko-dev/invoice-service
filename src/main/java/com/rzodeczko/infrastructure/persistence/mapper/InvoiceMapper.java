@@ -29,6 +29,7 @@ public class InvoiceMapper {
                 .status(domain.getStatus().name())
                 .externalId(domain.getExternalId())
                 .items(entityItems)
+                .createdAt(domain.getCreatedAt())
                 .build();
     }
 
@@ -46,7 +47,8 @@ public class InvoiceMapper {
                 entity.getBuyerName(),
                 entity.getExternalId(),
                 InvoiceStatus.valueOf(entity.getStatus()),
-                items
+                items,
+                entity.getCreatedAt()
         );
     }
 }

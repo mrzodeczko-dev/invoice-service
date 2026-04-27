@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -80,7 +81,8 @@ class InvoiceUseCaseImplTest {
                     "Real Buyer",
                     null,
                     InvoiceStatus.DRAFT,
-                    List.of(new InvoiceItem("Product", 1, BigDecimal.TEN, TaxRate.of(23)))
+                    List.of(new InvoiceItem("Product", 1, BigDecimal.TEN, TaxRate.of(23))),
+                    Instant.now()
             );
 
             String externalId = "ext-123";
@@ -130,7 +132,8 @@ class InvoiceUseCaseImplTest {
             Invoice existingInvoice = Invoice.restore(
                     invoiceId, orderId, "123", "Buyer",
                     "ext-1", InvoiceStatus.ISSUED,
-                    List.of(new InvoiceItem("Item", 1, BigDecimal.TEN, TaxRate.of(23)))
+                    List.of(new InvoiceItem("Item", 1, BigDecimal.TEN, TaxRate.of(23))),
+                    Instant.now()
             );
 
             DataIntegrityViolationException exception = new DataIntegrityViolationException("Duplicate");
@@ -160,7 +163,8 @@ class InvoiceUseCaseImplTest {
             Invoice invoice = Invoice.restore(
                     invoiceId, UUID.randomUUID(), "123", "Buyer",
                     "ext-1", InvoiceStatus.ISSUED,
-                    List.of(new InvoiceItem("Item", 1, BigDecimal.TEN, TaxRate.of(23)))
+                    List.of(new InvoiceItem("Item", 1, BigDecimal.TEN, TaxRate.of(23))),
+                    Instant.now()
             );
             byte[] expectedPdf = {1, 2, 3};
 
@@ -184,7 +188,8 @@ class InvoiceUseCaseImplTest {
             Invoice invoice = Invoice.restore(
                     invoiceId, UUID.randomUUID(), "123", "Buyer",
                     externalId, InvoiceStatus.ISSUED,
-                    List.of(new InvoiceItem("Item", 1, BigDecimal.TEN, TaxRate.of(23)))
+                    List.of(new InvoiceItem("Item", 1, BigDecimal.TEN, TaxRate.of(23))),
+                    Instant.now()
             );
             byte[] fetchedPdf = {4, 5, 6};
 
@@ -221,7 +226,8 @@ class InvoiceUseCaseImplTest {
             Invoice invoice = Invoice.restore(
                     invoiceId, UUID.randomUUID(), "123", "Buyer",
                     null, InvoiceStatus.DRAFT,
-                    List.of(new InvoiceItem("Item", 1, BigDecimal.TEN, TaxRate.of(23)))
+                    List.of(new InvoiceItem("Item", 1, BigDecimal.TEN, TaxRate.of(23))),
+                    Instant.now()
             );
             given(invoiceTransactionBoundary.findById(invoiceId)).willReturn(Optional.of(invoice));
 
@@ -239,7 +245,8 @@ class InvoiceUseCaseImplTest {
             Invoice invoice = Invoice.restore(
                     invoiceId, UUID.randomUUID(), "123", "Buyer",
                     externalId, InvoiceStatus.ISSUED,
-                    List.of(new InvoiceItem("Item", 1, BigDecimal.TEN, TaxRate.of(23)))
+                    List.of(new InvoiceItem("Item", 1, BigDecimal.TEN, TaxRate.of(23))),
+                    Instant.now()
             );
 
             given(invoiceTransactionBoundary.findById(invoiceId)).willReturn(Optional.of(invoice));

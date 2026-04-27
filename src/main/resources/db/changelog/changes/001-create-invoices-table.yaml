@@ -39,6 +39,21 @@ databaseChangeLog:
               - column:
                   name: version
                   type: BIGINT
+              - column:
+                  name: created_at
+                  type: TIMESTAMP(6)
+                  defaultValueComputed: CURRENT_TIMESTAMP(6)
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: invoices
+            indexName: idx_invoices_status_created_at
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: created_at
 
         - addUniqueConstraint:
             tableName: invoices
