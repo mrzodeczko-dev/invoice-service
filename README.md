@@ -275,37 +275,37 @@ The service follows **Hexagonal Architecture (Ports & Adapters)**, strictly sepa
 
 ```mermaid
 graph TD
-    Client([Client / HTTP Request]) --> IC[InvoiceController]
-    Client --> HC[HealthCheckController]
-    FAPI{{Fakturownia API}} -->|POST /webhooks/fakturownia/invoices/update| WC[WebhookController]
+    Client(["Client / HTTP Request"]) --> IC["InvoiceController"]
+    Client --> HC["HealthCheckController"]
+    FAPI{{"Fakturownia API"}} -->|"POST /webhooks/fakturownia/invoices/update"| WC["WebhookController"]
 
-    IC --> GI[GenerateInvoiceUseCase Port]
-    IC --> GP[GetInvoicePdfUseCase Port]
-    WC --> HW[HandleInvoiceWebhookUseCase Port]
+    IC --> GI["GenerateInvoiceUseCase Port"]
+    IC --> GP["GetInvoicePdfUseCase Port"]
+    WC --> HW["HandleInvoiceWebhookUseCase Port"]
 
-    GI --> IUC[InvoiceUseCaseImpl]
+    GI --> IUC["InvoiceUseCaseImpl"]
     GP --> IUC
-    HW --> IWU[InvoiceWebhookUseCaseImpl]
+    HW --> IWU["InvoiceWebhookUseCaseImpl"]
 
-    IUC --> IS[InvoiceService — Domain Logic]
-    IUC --> ITB[InvoiceTransactionBoundary]
-    IUC --> TS[TaxSystemPort]
-    IUC --> RECON[InvoiceReconciliationService]
+    IUC --> IS["InvoiceService — Domain Logic"]
+    IUC --> ITB["InvoiceTransactionBoundary"]
+    IUC --> TS["TaxSystemPort"]
+    IUC --> RECON["InvoiceReconciliationService"]
 
     IWU --> ITB
     IWU --> TS
 
-    SCHED[InvoiceIssueUnknownReconciliationJob<br/>@Scheduled + @SchedulerLock] --> ITB
+    SCHED["InvoiceIssueUnknownReconciliationJob<br>@Scheduled + @SchedulerLock"] --> ITB
     SCHED --> TS
     SCHED --> RECON
 
-    IS --> IR[InvoiceRepository Port]
+    IS --> IR["InvoiceRepository Port"]
     ITB --> IR
 
-    IR --> JPA[JpaInvoiceRepositoryAdapter<br>MySQL — PDF cache]
-    TS --> FA[FakturowniaAdapter<br>RestClient]
+    IR --> JPA["JpaInvoiceRepositoryAdapter<br>MySQL — PDF cache"]
+    TS --> FA["FakturowniaAdapter<br>RestClient"]
 
-    JPA -.-> DB[(MySQL 9.6)]
+    JPA -.-> DB[("MySQL 9.6")]
     FA -.-> FAPI
 ```
 
