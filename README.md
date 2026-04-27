@@ -109,8 +109,8 @@ Base URL (local): `http://localhost:${INVOICE_SERVICE_PORT}` (default: `8082`)
 | Method | Path | Description | Request body | Success | Error codes |
 |--------|------|-------------|-------------|---------|-------------|
 | `GET` | `/` | Service health check | — | `200 OK` | — |
-| `POST` | `/invoices` | Create a new invoice | `orderId`, `taxId`, `buyerName`, `items[]` | `201 Issued` / `202 PendingConfirmation` / `409 ReconciliationRequired` | `400`, `500` |
-| `GET` | `/invoices/{id}/pdf` | Download invoice PDF | — | `200 OK` (`application/pdf`) | `404`, `409` (not yet issued), `500` |
+| `POST` | `/invoices` | Create a new invoice | `orderId`, `taxId`, `buyerName`, `items[]` | `201 Issued` / `202 PendingConfirmation` / `409 ReconciliationRequired` | `400` (validation), `409` (concurrent modification), `422` (permanent tax-system error), `503` (temporary tax-system error), `500` |
+| `GET` | `/invoices/{id}/pdf` | Download invoice PDF | — | `200 OK` (`application/pdf`) | `404` (invoice not found), `409` (not yet issued), `502` (empty PDF from Fakturownia), `503`, `500` |
 | `POST` | `/webhooks/fakturownia/invoices/update` | Handle Fakturownia `invoice:update` webhook (fired by Fakturownia GUI edits only) | JSON webhook payload | `200 OK` | `400`, `401`, `429`, `500` |
 | `GET` | `/actuator/health` | Spring Boot Actuator health (used by Docker healthcheck and orchestrators) | — | `200 OK` | — |
 
@@ -127,8 +127,8 @@ curl -X POST "http://localhost:8082/invoices" \
     "taxId": "123-456-78-90",
     "buyerName": "John Doe",
     "items": [
-      { "name": "Product A", "quantity": 2, "price": 99.99 },
-      { "name": "Product B", "quantity": 1, "price": 49.99 }
+      { "name": "Product A", "quantity": 2, "price": 99.99, "taxRate": 0.23 },
+      { "name": "Product B", "quantity": 1, "price": 49.99, "taxRate": 0.23 }
     ]
   }'
 ```
@@ -364,9 +364,9 @@ Client configuration lives under `webhook.clients.<appName>` in `application.yam
 webhook:
   clients:
     fakturownia:
-      enabled: true
+      enabled: true                                       # set to false to kill-switch this client without redeploy
       shared-secret: ${INVOICE_SERVICE_WEBHOOK_TOKEN:secret}
-      requests-per-minute-limit: 60
+      requests-per-minute-limit: 60                        # set to 0 to disable rate limiting for this client
 ```
 
 Set `requests-per-minute-limit: 0` (or omit the property) to disable rate limiting for that client.

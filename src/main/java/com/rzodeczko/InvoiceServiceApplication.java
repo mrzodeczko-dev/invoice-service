@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class InvoiceServiceApplication {
-    void main() {
+    public static void main() {
         SpringApplication.run(InvoiceServiceApplication.class);
     }
 }

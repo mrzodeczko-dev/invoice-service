@@ -1,3 +1,9 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "50m"
+    max-file: "3"
+
 services:
   # --------------------------------------------------------------------------------------------------------------------
   # INVOICE MYSQL
@@ -25,17 +31,38 @@ services:
         limits:
           memory: 512M
           cpus: "1.0"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "3"
+    logging: *default-logging
     healthcheck:
       test: [ "CMD-SHELL", "mysql -h localhost -u $$MYSQL_USER -p$$MYSQL_PASSWORD -e \"SELECT 1 FROM information_schema.schemata WHERE schema_name='$$MYSQL_DATABASE'\"" ]
       interval: 10s
       timeout: 5s
       retries: 15
       start_period: 30s
+    networks:
+      - mr-network
+
+  # INVOICE REDIS (Bucket4j webhook rate limiter)
+  # --------------------------------------------------------------------------------------------------------------------
+  invoice-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: [ "redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru" ]
+    volumes:
+      - invoice-redis:/data
+    ports:
+      - '${INVOICE_SERVICE_REDIS_PORT:-6379}:6379'
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+          cpus: "0.5"
+    logging: *default-logging
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
     networks:
       - mr-network
 
@@ -52,6 +79,14 @@ services:
     depends_on:
       invoice-mysql:
         condition: service_healthy
+      invoice-redis:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:${INVOICE_SERVICE_PORT}/actuator/health" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     environment:
       SPRING_APPLICATION_NAME: ${INVOICE_SERVICE_APPLICATION_NAME}
       SPRING_DATASOURCE_URL: jdbc:mysql://${INVOICE_SERVICE_MYSQL_DB_HOST}:3306/${INVOICE_SERVICE_MYSQL_DB_NAME}?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
@@ -62,21 +97,20 @@ services:
       INVOICES_TOKEN: ${INVOICE_SERVICE_FAKTUROWNIA_TOKEN}
       INVOICE_SERVICE_WEBHOOK_TOKEN: ${INVOICE_SERVICE_WEBHOOK_TOKEN}
       SPRINGDOC_API_DOCS_SWAGGER_ENABLED: ${SPRINGDOC_API_DOCS_SWAGGER_ENABLED}
+      SPRING_DATA_REDIS_HOST: invoice-redis
+      SPRING_DATA_REDIS_PORT: 6379
     deploy:
       resources:
         limits:
           memory: 768M
           cpus: "1.0"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "3"
+    logging: *default-logging
     networks:
       - mr-network
 
 volumes:
   invoice-mysql:
+  invoice-redis:
 
 networks:
   mr-network:
