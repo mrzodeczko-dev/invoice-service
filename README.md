@@ -406,11 +406,12 @@ stateDiagram-v2
     ISSUING --> ISSUED: Fakturownia returns externalId
     ISSUING --> ISSUE_UNKNOWN: TaxSystemTemporaryException<br/>(timeout / 5xx) and not found via findByOrderId
     ISSUING --> ISSUE_FAILED: TaxSystemPermanentException<br/>(4xx, validation rejected)
+    ISSUING --> RECONCILIATION_REQUIRED: 2+ external invoices found<br/>via synchronous findByOrderId (POST /invoices)
     ISSUE_UNKNOWN --> ISSUED: async reconciliation job<br/>finds 1 matching external invoice
-    ISSUE_UNKNOWN --> RECONCILIATION_REQUIRED: 2+ external invoices<br/>match the same orderId
+    ISSUE_UNKNOWN --> RECONCILIATION_REQUIRED: async reconciliation job<br/>finds 2+ matching external invoices
     ISSUED --> [*]
     ISSUE_FAILED --> [*]
-    RECONCILIATION_REQUIRED --> [*]: manual
+    RECONCILIATION_REQUIRED --> [*]: manual intervention
 ```
 
 | Status | Meaning |
@@ -420,7 +421,7 @@ stateDiagram-v2
 | `ISSUED` | Confirmed in Fakturownia, `externalId` is stored locally. Terminal happy path. |
 | `ISSUE_UNKNOWN` | Fakturownia call failed with a temporary error and no matching invoice was found via `findByOrderId`. Eligible for the async reconciliation job. |
 | `ISSUE_FAILED` | Fakturownia rejected the request permanently (4xx, validation). Terminal failure. |
-| `RECONCILIATION_REQUIRED` | Two or more Fakturownia invoices match the same local `orderId`. Manual intervention required — the service refuses to guess which one to bind. |
+| `RECONCILIATION_REQUIRED` | Two or more Fakturownia invoices match the same local `orderId` — either detected synchronously during `POST /invoices` (via pre-call or post-failure `findByOrderId`) or asynchronously by the reconciliation job. Manual intervention required — the service refuses to guess which one to bind. |
 
 ### Recovery strategy
 
