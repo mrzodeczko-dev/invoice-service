@@ -181,7 +181,7 @@ To configure the base URL and secrets, create an `http-client.env.json` file nex
 - Docker & Docker Compose v2
 - Java 25+ _(only if running outside containers)_
 - Maven 3.9+ _(only if running outside containers)_
-- A reachable Redis instance — required by the webhook rate limiter (see [Webhook Security](#webhook-security)). Not bundled in `docker-compose.yaml`; configure `SPRING_DATA_REDIS_HOST` / `SPRING_DATA_REDIS_PORT` accordingly.
+- A reachable Redis instance — required by the webhook rate limiter (see [Webhook Security](#webhook-security)). Bundled in `docker-compose.yaml`; configure `SPRING_DATA_REDIS_HOST` / `SPRING_DATA_REDIS_PORT` accordingly.
 
 ### 1. Environment configuration
 
