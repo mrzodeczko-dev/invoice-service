@@ -1,0 +1,130 @@
+### invoice-service - przykłady requestów
+###
+### Plik dla IntelliJ HTTP Client
+### Konfigurację wartości zmiennych ustaw w pliku `http-client.env.json`
+### obok tego pliku, np.:
+###
+### {
+###   "local": {
+###     "API_URL": "http://localhost:8082",
+###     "WEBHOOK_TOKEN": "secret",
+###     "WEBHOOK_APP_NAME": "fakturownia"
+###   }
+### }
+
+### 1. Health check
+GET {{API_URL}}/actuator/health
+Accept: application/json
+
+### 2. POST /invoices - happy path (DRAFT -> ISSUED)
+POST {{API_URL}}/invoices
+Content-Type: application/json
+
+{
+  "orderId": "{{$uuid}}",
+  "taxId": "1234567890",
+  "buyerName": "Test Buyer Sp. z o.o.",
+  "items": [
+    { "name": "Product A", "quantity": 1, "price": 99.99, "taxRate": 23 },
+    { "name": "Product B", "quantity": 2, "price": 10.50, "taxRate": 8 }
+  ]
+}
+
+> {%
+client.global.set("invoiceId", response.body.invoiceId);
+%}
+
+### 3. GET /invoices/{id}/pdf - cold cache (z Fakturowni)
+GET {{API_URL}}/invoices/{{invoiceId}}/pdf
+Accept: application/pdf
+
+### 4. GET /invoices/{id}/pdf - warm cache (z bazy)
+GET {{API_URL}}/invoices/{{invoiceId}}/pdf
+Accept: application/pdf
+
+### 5. POST /invoices - validation error (puste items)
+POST {{API_URL}}/invoices
+Content-Type: application/json
+
+{
+  "orderId": "{{$uuid}}",
+  "taxId": "1234567890",
+  "buyerName": "Test",
+  "items": []
+}
+
+### 6. POST /invoices - validation error (ujemna cena)
+POST {{API_URL}}/invoices
+Content-Type: application/json
+
+{
+  "orderId": "{{$uuid}}",
+  "taxId": "1234567890",
+  "buyerName": "Test",
+  "items": [
+    { "name": "Bad", "quantity": 1, "price": -5, "taxRate": 23 }
+  ]
+}
+
+### 7. POST /invoices - duplikat order_id (oczekiwane: idempotent recovery)
+# Powtórz request 2 razy z tym samym orderId. Drugi powinien wrócić
+# istniejącą fakturę (status ISSUED) zamiast rzucać 409.
+@duplicateOrderId = 11111111-1111-1111-1111-111111111111
+
+POST {{API_URL}}/invoices
+Content-Type: application/json
+
+{
+  "orderId": "{{duplicateOrderId}}",
+  "taxId": "1234567890",
+  "buyerName": "Idempotent Test",
+  "items": [{ "name": "X", "quantity": 1, "price": 10, "taxRate": 23 }]
+}
+
+### 8. Webhook - poprawny token (oczekiwane: 200/404)
+POST {{API_URL}}/webhooks/fakturownia/invoices/update
+Content-Type: application/json
+
+{
+  "id": 999001,
+  "deal": { "external_ids": { "invoice_id": 999001 } },
+  "app_name": "{{WEBHOOK_APP_NAME}}",
+  "api_token": "{{WEBHOOK_TOKEN}}"
+}
+
+### 9. Webhook - zły token (oczekiwane: 401)
+POST {{API_URL}}/webhooks/fakturownia/invoices/update
+Content-Type: application/json
+
+{
+  "id": 999002,
+  "deal": { "external_ids": { "invoice_id": 999002 } },
+  "app_name": "{{WEBHOOK_APP_NAME}}",
+  "api_token": "wrong-token"
+}
+
+### 10. Webhook - nieznany app_name (oczekiwane: 401)
+POST {{API_URL}}/webhooks/fakturownia/invoices/update
+Content-Type: application/json
+
+{
+  "id": 999003,
+  "deal": { "external_ids": { "invoice_id": 999003 } },
+  "app_name": "unknown-client",
+  "api_token": "{{WEBHOOK_TOKEN}}"
+}
+
+### 11. Webhook - brak external_id w deal (oczekiwane: 200, no-op)
+POST {{API_URL}}/webhooks/fakturownia/invoices/update
+Content-Type: application/json
+
+{
+  "id": 999004,
+  "deal": { "external_ids": {} },
+  "app_name": "{{WEBHOOK_APP_NAME}}",
+  "api_token": "{{WEBHOOK_TOKEN}}"
+}
+
+### 12. GET /invoices/{id}/pdf - nieistniejące id (oczekiwane: 404)
+GET {{API_URL}}/invoices/00000000-0000-0000-0000-000000000000/pdf
+Accept: application/pdf

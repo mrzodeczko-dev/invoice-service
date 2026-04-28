@@ -108,7 +108,7 @@ public class FakturowniaAdapter implements TaxSystemPort {
         try {
             List<FakturowniaGetInvoiceDto> invoicesResponse = restClient.get()
                     .uri(uri -> uri
-                            .path("/invoices")
+                            .path("/invoices.json")
                             .queryParam("api_token", fakturowniaProperties.token())
                             .queryParam("oid", orderId)
                             .queryParam("status", "issued")
