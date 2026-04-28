@@ -63,14 +63,17 @@ public class InvoiceTransactionBoundary {
         return invoiceRepository.findByExternalId(externalId);
     }
 
+    @Transactional
     public void markIssueUnknown(Invoice invoice) {
         invoiceService.markInvoiceAsUnknown(invoice);
     }
 
+    @Transactional
     public void markIssueFailed(Invoice invoice) {
         invoiceService.markIssueFailed(invoice);
     }
 
+    @Transactional
     public void markReconciliationRequired(Invoice invoice) {
         invoiceService.markReconciliationRequired(invoice);
     }

@@ -34,6 +34,9 @@ public class InvoiceReconciliationService {
 
         if (hasExistingExternalIdMatch(localInvoice, matchingInvoices)) {
             logIfDuplicatesExist(localInvoice, matchingInvoices);
+            if (!localInvoice.isIssued()) {
+                invoiceTransactionBoundary.markInvoiceAsIssued(localInvoice, localInvoice.getExternalId());
+            }
             return Optional.of(new InvoiceIssueResult.Issued(localInvoice.getId()));
         }
 
