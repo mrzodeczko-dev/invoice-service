@@ -135,7 +135,7 @@ public class FakturowniaAdapter implements TaxSystemPort {
         }
     }
 
-    private void handleError(HttpStatusCode statusCode, String operation, String context) {
+    void handleError(HttpStatusCode statusCode, String operation, String context) {
         if (!(statusCode instanceof HttpStatus status)) {
             throw new TaxSystemTemporaryException(
                     "Unknown HTTP status during " + operation + ". " + context + ", status=" + statusCode

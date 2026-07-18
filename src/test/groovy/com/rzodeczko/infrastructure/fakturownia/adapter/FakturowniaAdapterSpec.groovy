@@ -7,18 +7,17 @@ import com.rzodeczko.domain.model.InvoiceItem
 import com.rzodeczko.domain.vo.TaxRate
 import com.rzodeczko.infrastructure.configuration.properties.FakturowniaProperties
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.web.client.RestClient
 import spock.lang.Specification
+import spock.lang.Subject
 import spock.lang.Unroll
 
 import java.lang.reflect.Method
 
 class FakturowniaAdapterSpec extends Specification {
 
-    // --- handleError (via reflection, it's private but critical logic) ---
-
-    def adapter
+    @Subject
+    FakturowniaAdapter adapter
 
     def setup() {
         def props = new FakturowniaProperties("https://fakturownia.test", "test-token")
@@ -26,20 +25,15 @@ class FakturowniaAdapterSpec extends Specification {
         adapter = new FakturowniaAdapter(builder, props)
     }
 
-    private void invokeHandleError(HttpStatusCode statusCode, String operation, String context) {
-        Method method = FakturowniaAdapter.getDeclaredMethod("handleError", HttpStatusCode, String, String)
-        method.setAccessible(true)
-        method.invoke(adapter, statusCode, operation, context)
-    }
+    // --- handleError ---
 
     @Unroll
     def "handleError should throw TaxSystemPermanentException for #status"() {
         when:
-        invokeHandleError(status, "test", "ctx")
+        adapter.handleError(status, "test", "ctx")
 
         then:
-        def ex = thrown(Exception)
-        ex.cause instanceof TaxSystemPermanentException
+        thrown(TaxSystemPermanentException)
 
         where:
         status << [
@@ -56,11 +50,10 @@ class FakturowniaAdapterSpec extends Specification {
     @Unroll
     def "handleError should throw TaxSystemTemporaryException for #status"() {
         when:
-        invokeHandleError(status, "test", "ctx")
+        adapter.handleError(status, "test", "ctx")
 
         then:
-        def ex = thrown(Exception)
-        ex.cause instanceof TaxSystemTemporaryException
+        thrown(TaxSystemTemporaryException)
 
         where:
         status << [
@@ -75,23 +68,21 @@ class FakturowniaAdapterSpec extends Specification {
 
     def "handleError should throw TaxSystemPermanentException for unhandled 4xx"() {
         when:
-        invokeHandleError(HttpStatus.GONE, "test", "ctx")
+        adapter.handleError(HttpStatus.GONE, "test", "ctx")
 
         then:
-        def ex = thrown(Exception)
-        ex.cause instanceof TaxSystemPermanentException
+        thrown(TaxSystemPermanentException)
     }
 
     def "handleError should throw TaxSystemTemporaryException for unhandled 5xx"() {
         when:
-        invokeHandleError(HttpStatus.NOT_IMPLEMENTED, "test", "ctx")
+        adapter.handleError(HttpStatus.NOT_IMPLEMENTED, "test", "ctx")
 
         then:
-        def ex = thrown(Exception)
-        ex.cause instanceof TaxSystemTemporaryException
+        thrown(TaxSystemTemporaryException)
     }
 
-    // --- mapToRequest (via reflection) ---
+    // --- mapToRequest (still private, uses reflection) ---
 
     def "mapToRequest should correctly map invoice to request DTO"() {
         given:

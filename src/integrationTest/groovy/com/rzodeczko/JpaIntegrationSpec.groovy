@@ -7,21 +7,21 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.mysql.MySQLContainer
-import org.testcontainers.spock.Testcontainers
-import spock.lang.Shared
 import spock.lang.Specification
 
-@Testcontainers
 @DataJpaTest
 @Import(JpaAuditingConfig)
 @ActiveProfiles("testcontainers")
 abstract class JpaIntegrationSpec extends Specification {
 
-    @Shared
     static MySQLContainer mysql = new MySQLContainer("mysql:8.0")
             .withDatabaseName("invoice_service_test")
             .withUsername("test")
             .withPassword("test")
+
+    static {
+        mysql.start()
+    }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {

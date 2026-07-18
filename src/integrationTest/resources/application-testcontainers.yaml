@@ -16,3 +16,9 @@ server:
 fakturownia:
   url: http://localhost:3000
   token: test-token
+webhooks:
+  clients:
+    fakturownia:
+      enabled: true
+      shared-secret: secret
+      requests-per-minute-limit: 60
