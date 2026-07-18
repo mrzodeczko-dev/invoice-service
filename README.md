@@ -535,8 +535,9 @@ The fixed delay between job ticks is controlled by the placeholder `${invoice.re
 
 | Layer | Technology |
 |-------|------------|
-| Language | Java 25 (Virtual Threads enabled) |
+| Language | Java 25 (Virtual Threads enabled), Groovy 4.0.32 (test) |
 | Framework | Spring Boot 4.0.5 — Spring Data JPA, Spring WebMVC, Spring Validation, Spring AOP |
+| Testing | JUnit 5, Spock Framework 2.4-M6 (Groovy-based BDD specs) |
 | Database migrations | Liquibase |
 | Database | MySQL 9.6.0 (HikariCP connection pool) |
 | Distributed locking | ShedLock (JDBC provider, MySQL `shedlock` table) |
@@ -555,18 +556,21 @@ The fixed delay between job ticks is controlled by the placeholder `${invoice.re
 
 [↑ Back to top](#toc)
 
-The project uses Spring Boot's dedicated test slice starters to keep each test layer isolated, and a separate `integrationTest` source set for end-to-end style controller tests:
+The project uses Spring Boot's dedicated test slice starters to keep each test layer isolated, Spock Framework for BDD-style unit specs, and a separate `integrationTest` source set for end-to-end style controller tests:
 
 | Starter / source set | What it tests |
 |----------------------|---------------|
-| `spring-boot-starter-data-jpa-test` (under `src/test`) | JPA slice tests — entity mappings and repository behavior |
-| `spring-boot-starter-webmvc-test` (under `src/test`) | MockMVC controller tests — request validation and error response contracts |
-| `spring-boot-starter-restclient-test` (under `src/test`) | Mocked RestClient tests for the Fakturownia adapter |
-| `spring-boot-starter-actuator-test` (under `src/test`) | Actuator endpoint availability |
+| `spring-boot-starter-data-jpa-test` (under `src/test/java`) | JPA slice tests — entity mappings and repository behavior |
+| `spring-boot-starter-webmvc-test` (under `src/test/java`) | MockMVC controller tests — request validation and error response contracts |
+| `spring-boot-starter-restclient-test` (under `src/test/java`) | Mocked RestClient tests for the Fakturownia adapter |
+| `spring-boot-starter-actuator-test` (under `src/test/java`) | Actuator endpoint availability |
+| Spock Framework 2.4-M6 (under `src/test/groovy`) | BDD-style unit specs — domain model, application services, infrastructure adapters, webhook security, rate limiting, exception handling, mappers |
 | `src/integrationTest` | End-to-end controller and persistence tests against the real Spring context |
 
+Spock specs are compiled by `gmavenplus-plugin` and discovered by Surefire alongside JUnit tests.
+
 ```bash
-mvn test       # runs unit tests (src/test)
+mvn test       # runs unit tests (src/test — both Java and Groovy)
 mvn verify     # runs unit + integration tests (src/test + src/integrationTest)
 ```
 
@@ -646,7 +650,9 @@ Only the `health` actuator endpoint is exposed by default (`management.endpoints
 │   │               ├── 001-create-invoices-table.yaml         # invoices + UNIQUE(order_id)
 │   │               ├── 002-create-invoice-items-table.yaml    # invoice line items
 │   │               └── 003-create-shedlock-table.yaml         # ShedLock coordination table
-│   ├── test/                                   # Unit + slice tests
+│   ├── test/
+│   │   ├── java/                              # JUnit 5 unit + slice tests
+│   │   └── groovy/                            # Spock BDD specs (domain, services, adapters, webhook, mappers)
 │   └── integrationTest/                        # End-to-end tests (separate Maven source set)
 ├── docker-compose.yaml                         # MySQL + application orchestration (Redis must be provided externally)
 ├── Dockerfile                                  # Multi-stage build (Maven → minimal JRE runtime)
