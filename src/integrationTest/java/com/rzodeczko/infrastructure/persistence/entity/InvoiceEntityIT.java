@@ -1,9 +1,11 @@
 package com.rzodeczko.infrastructure.persistence.entity;
 
+import com.rzodeczko.infrastructure.configuration.JpaAuditingConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -13,6 +15,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@Import(JpaAuditingConfig.class)
 @ActiveProfiles("integration-test")
 class InvoiceEntityIT {
 
