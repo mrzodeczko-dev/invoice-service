@@ -26,6 +26,12 @@
         <tag/>
         <url/>
     </scm>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/mrzodeczko-dev/invoice-service</url>
+        </repository>
+    </distributionManagement>
     <properties>
         <java.version>25</java.version>
         <jacoco.version>0.8.14</jacoco.version>
@@ -33,6 +39,7 @@
         <surefire.version>3.2.5</surefire.version>
         <openapi.version>3.0.1</openapi.version>
         <shedlock.version>6.0.2</shedlock.version>
+        <spring-cloud-contract.version>5.0.3</spring-cloud-contract.version>
         <spock.version>2.4-M6-groovy-4.0</spock.version>
         <groovy.version>4.0.32</groovy.version>
         <testcontainers.version>2.0.5</testcontainers.version>
@@ -203,6 +210,18 @@
             <version>4.2.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-contract-verifier</artifactId>
+            <version>${spring-cloud-contract.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>spring-mock-mvc</artifactId>
+            <version>6.0.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -313,6 +332,27 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-contract-maven-plugin</artifactId>
+                <version>${spring-cloud-contract.version}</version>
+                <extensions>false</extensions>
+                <configuration>
+                    <baseClassForTests>
+                        com.rzodeczko.contract.BaseContractTest
+                    </baseClassForTests>
+                    <testFramework>JUNIT5</testFramework>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generateTests</goal>
+                            <goal>convert</goal>
+                            <goal>generateStubs</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>

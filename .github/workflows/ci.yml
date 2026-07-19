@@ -20,6 +20,9 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
           cache: 'maven'
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
 
       - name: Build (package)
         run: mvn clean package --batch-mode --no-transfer-progress
@@ -46,3 +49,8 @@ jobs:
           files: target/site/jacoco/jacoco.xml
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Publish stub JAR to GitHub Packages
+        run: mvn deploy -DskipTests --batch-mode --no-transfer-progress
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
