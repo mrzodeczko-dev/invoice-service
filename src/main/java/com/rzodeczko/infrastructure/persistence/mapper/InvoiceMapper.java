@@ -26,7 +26,7 @@ public class InvoiceMapper {
                 .orderId(domain.getOrderId())
                 .buyerName(domain.getBuyerName())
                 .taxId(domain.getTaxId())
-                .status(domain.getStatus().name())
+                .status(domain.getStatus())
                 .externalId(domain.getExternalId())
                 .items(entityItems)
                 .createdAt(domain.getCreatedAt())
@@ -46,7 +46,7 @@ public class InvoiceMapper {
                 entity.getTaxId(),
                 entity.getBuyerName(),
                 entity.getExternalId(),
-                InvoiceStatus.valueOf(entity.getStatus()),
+                entity.getStatus(),
                 items,
                 entity.getCreatedAt()
         );

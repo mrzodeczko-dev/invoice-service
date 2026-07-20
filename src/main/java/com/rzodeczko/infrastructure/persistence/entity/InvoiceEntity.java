@@ -1,5 +1,6 @@
 package com.rzodeczko.infrastructure.persistence.entity;
 
+import com.rzodeczko.domain.model.InvoiceStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -35,7 +36,8 @@ public class InvoiceEntity {
     private String buyerName;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private InvoiceStatus status;
 
     private String externalId;
 
