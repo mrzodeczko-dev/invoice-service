@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.rzodeczko</groupId>
     <artifactId>invoice-service</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>invoice-service</name>
     <description>invoice-service</description>
     <url/>
