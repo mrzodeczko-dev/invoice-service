@@ -63,6 +63,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Publish stub JAR to GitHub Packages
-        run: mvn deploy -DskipTests --batch-mode --no-transfer-progress
+        run: mvn versions:set -DnewVersion=1.0.${{ github.run_number }} -DgenerateBackupPoms=false --batch-mode --no-transfer-progress && mvn deploy -DskipTests --batch-mode --no-transfer-progress
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
