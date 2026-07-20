@@ -21,7 +21,9 @@ RUN --mount=type=cache,target=/root/.m2 \
     mvn clean package -DskipTests -B --no-transfer-progress
 
 
-RUN java -Djarmode=tools -jar target/*.jar extract --destination target/extracted
+RUN rm -f target/*-stubs.jar && \
+    java -Djarmode=tools -jar target/*.jar extract --destination target/extracted
+
 
 # -----------------------------------------------------------------------------------------------
 # STAGE 2: RUNTIME
