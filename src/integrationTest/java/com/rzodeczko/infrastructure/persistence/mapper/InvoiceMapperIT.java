@@ -50,10 +50,10 @@ class InvoiceMapperIT {
         assertThat(entity.getTaxId()).isEqualTo("123-456");
         assertThat(entity.getBuyerName()).isEqualTo("John Doe");
         assertThat(entity.getExternalId()).isEqualTo("ext-123");
-        assertThat(entity.getStatus()).isEqualTo("ISSUED");
+        assertThat(entity.getStatus()).isEqualTo(InvoiceStatus.ISSUED);
         assertThat(entity.getItems()).hasSize(2);
-        
-        InvoiceItemEmbeddable firstItem = entity.getItems().get(0);
+
+        InvoiceItemEmbeddable firstItem = entity.getItems().getFirst();
         assertThat(firstItem.getName()).isEqualTo("Item1");
         assertThat(firstItem.getQuantity()).isEqualTo(1);
         assertThat(firstItem.getTaxRate()).isEqualByComparingTo(taxRate);
@@ -93,8 +93,8 @@ class InvoiceMapperIT {
         assertThat(domain.getStatus()).isEqualTo(InvoiceStatus.ISSUED);
         assertThat(domain.getCreatedAt()).isEqualTo(createdAt);
         assertThat(domain.getItems()).hasSize(1);
-        
-        InvoiceItem firstItem = domain.getItems().get(0);
+
+        InvoiceItem firstItem = domain.getItems().getFirst();
         assertThat(firstItem.name()).isEqualTo("Item1");
         assertThat(firstItem.taxRate().value()).isEqualByComparingTo(taxRate);
     }
