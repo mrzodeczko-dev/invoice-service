@@ -135,9 +135,9 @@ class InvoiceControllerIT extends IntegrationSpec {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
 
-        then: "should return created (idempotent - invoice already issued)"
-        result.andExpect(status().isCreated())
-                .andExpect(jsonPath('$.status').value("ISSUED"))
+        then: "should return 409 Conflict"
+        result.andExpect(status().isConflict())
+                .andExpect(jsonPath('$.status').value("409"))
     }
 
     def "GET /invoices/{id}/pdf should return 404 when invoice not found"() {

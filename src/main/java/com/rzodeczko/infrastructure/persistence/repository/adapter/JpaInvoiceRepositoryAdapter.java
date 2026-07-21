@@ -32,7 +32,7 @@ public class JpaInvoiceRepositoryAdapter implements InvoiceRepository {
             InvoiceEntity entity = jpaInvoiceRepository
                     .findById(invoice.getId())
                     .map(existing -> {
-                        existing.setStatus(invoice.getStatus().name());
+                        existing.setStatus(invoice.getStatus());
                         existing.setExternalId(invoice.getExternalId());
                         return existing;
                     })

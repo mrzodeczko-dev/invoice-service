@@ -6,13 +6,14 @@ import com.rzodeczko.domain.model.Invoice
 import com.rzodeczko.domain.model.InvoiceItem
 import com.rzodeczko.domain.vo.TaxRate
 import com.rzodeczko.infrastructure.configuration.properties.FakturowniaProperties
+import com.rzodeczko.infrastructure.fakturownia.dto.CreateInvoiceWrapperDto
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.RestClient
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
 
-import java.lang.reflect.Method
+import java.time.LocalDate
 
 class FakturowniaAdapterSpec extends Specification {
 
@@ -82,8 +83,6 @@ class FakturowniaAdapterSpec extends Specification {
         thrown(TaxSystemTemporaryException)
     }
 
-    // --- mapToRequest (still private, uses reflection) ---
-
     def "mapToRequest should correctly map invoice to request DTO"() {
         given:
         def invoiceId = UUID.randomUUID()
@@ -94,11 +93,9 @@ class FakturowniaAdapterSpec extends Specification {
                         new InvoiceItem("Gadget", 1, new BigDecimal("50.00"), TaxRate.of(8))
                 ])
 
-        Method method = FakturowniaAdapter.getDeclaredMethod("mapToRequest", Invoice)
-        method.setAccessible(true)
 
         when:
-        def wrapper = method.invoke(adapter, invoice)
+        def wrapper = adapter.mapToRequest(invoice)
 
         then:
         wrapper.invoice().kind() == "vat"
@@ -125,16 +122,13 @@ class FakturowniaAdapterSpec extends Specification {
         def invoice = new Invoice(UUID.randomUUID(), UUID.randomUUID(), "TAX-1", "Buyer",
                 [new InvoiceItem("Item", 1, BigDecimal.TEN)])
 
-        Method method = FakturowniaAdapter.getDeclaredMethod("mapToRequest", Invoice)
-        method.setAccessible(true)
-
         when:
-        def wrapper = method.invoke(adapter, invoice)
-        def sellDate = java.time.LocalDate.parse(wrapper.invoice().sellDate())
-        def paymentTo = java.time.LocalDate.parse(wrapper.invoice().paymentTo())
+        CreateInvoiceWrapperDto createInvoiceWrapperDto = adapter.mapToRequest(invoice)
+        LocalDate sellDate = LocalDate.parse(createInvoiceWrapperDto.invoice().sellDate())
+        LocalDate paymentTo = LocalDate.parse(createInvoiceWrapperDto.invoice().paymentTo())
 
         then:
         paymentTo == sellDate.plusDays(7)
-        wrapper.invoice().issueDate() == wrapper.invoice().sellDate()
+        createInvoiceWrapperDto.invoice().issueDate() == createInvoiceWrapperDto.invoice().sellDate()
     }
 }

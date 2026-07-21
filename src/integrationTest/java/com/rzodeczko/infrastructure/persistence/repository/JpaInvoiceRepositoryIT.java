@@ -1,5 +1,6 @@
 package com.rzodeczko.infrastructure.persistence.repository;
 
+import com.rzodeczko.domain.model.InvoiceStatus;
 import com.rzodeczko.infrastructure.configuration.JpaAuditingConfig;
 import com.rzodeczko.infrastructure.persistence.entity.InvoiceEntity;
 import com.rzodeczko.infrastructure.persistence.entity.InvoiceItemEmbeddable;
@@ -34,7 +35,7 @@ class JpaInvoiceRepositoryIT {
                 .orderId(orderId)
                 .taxId("123-456-78-90")
                 .buyerName("John Doe")
-                .status("DRAFT")
+                .status(InvoiceStatus.DRAFT)
                 .items(List.of(
                         new InvoiceItemEmbeddable("Item1", 1, BigDecimal.TEN, BigDecimal.valueOf(23))
                 ))
@@ -56,7 +57,7 @@ class JpaInvoiceRepositoryIT {
                 .orderId(orderId)
                 .taxId("123-456-78-90")
                 .buyerName("John Doe")
-                .status("ISSUED")
+                .status(InvoiceStatus.ISSUED)
                 .items(List.of())
                 .build();
         jpaInvoiceRepository.save(entity);
@@ -75,7 +76,7 @@ class JpaInvoiceRepositoryIT {
                 .orderId(orderId)
                 .taxId("123")
                 .buyerName("Buyer")
-                .status("DRAFT")
+                .status(InvoiceStatus.DRAFT)
                 .items(List.of())
                 .build();
         jpaInvoiceRepository.save(entity);
@@ -103,7 +104,7 @@ class JpaInvoiceRepositoryIT {
                 .taxId("123")
                 .buyerName("Buyer")
                 .externalId(externalId)
-                .status("ISSUED")
+                .status(InvoiceStatus.ISSUED)
                 .items(List.of())
                 .build();
         jpaInvoiceRepository.save(entity);
@@ -131,7 +132,7 @@ class JpaInvoiceRepositoryIT {
                 .orderId(UUID.randomUUID())
                 .taxId("123")
                 .buyerName("Buyer")
-                .status("ISSUED")
+                .status(InvoiceStatus.ISSUED)
                 .items(List.of())
                 .build();
         jpaInvoiceRepository.save(entity);
@@ -154,7 +155,7 @@ class JpaInvoiceRepositoryIT {
                 .orderId(UUID.randomUUID())
                 .taxId("123")
                 .buyerName("Buyer")
-                .status("ISSUED")
+                .status(InvoiceStatus.ISSUED)
                 .pdfContent(initialPdf)
                 .items(List.of())
                 .build();

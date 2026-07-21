@@ -6,9 +6,11 @@ import com.rzodeczko.infrastructure.transaction.InvoiceTransactionBoundary;
 import com.rzodeczko.presentation.dto.FakturowniaGetInvoiceDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.Strings;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,6 +26,9 @@ public class InvoiceReconciliationService {
             Invoice localInvoice,
             List<FakturowniaGetInvoiceDto> externalInvoices
     ) {
+        if (CollectionUtils.isEmpty(externalInvoices)) {
+            return Optional.empty();
+        }
         List<FakturowniaGetInvoiceDto> matchingInvoices = externalInvoices.stream()
                 .filter(external -> isSameBusinessInvoice(localInvoice, external))
                 .toList();

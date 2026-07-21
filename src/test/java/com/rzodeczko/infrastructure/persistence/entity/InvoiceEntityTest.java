@@ -1,5 +1,6 @@
 package com.rzodeczko.infrastructure.persistence.entity;
 
+import com.rzodeczko.domain.model.InvoiceStatus;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -19,7 +20,7 @@ class InvoiceEntityTest {
         UUID orderId = UUID.randomUUID();
         String taxId = "123";
         String buyerName = "Buyer";
-        String status = "ISSUED";
+        InvoiceStatus status = InvoiceStatus.ISSUED;
         String externalId = "ext-1";
         List<InvoiceItemEmbeddable> items = List.of(
                 InvoiceItemEmbeddable.builder()

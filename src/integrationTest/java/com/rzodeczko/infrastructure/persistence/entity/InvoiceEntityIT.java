@@ -1,5 +1,6 @@
 package com.rzodeczko.infrastructure.persistence.entity;
 
+import com.rzodeczko.domain.model.InvoiceStatus;
 import com.rzodeczko.infrastructure.configuration.JpaAuditingConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ class InvoiceEntityIT {
                 .orderId(orderId)
                 .taxId("123-456-78-90")
                 .buyerName("John Doe")
-                .status("ISSUED")
+                .status(InvoiceStatus.ISSUED)
                 .externalId("ext-123")
                 .items(List.of(
                         new InvoiceItemEmbeddable("Item1", 1, BigDecimal.TEN, taxRate)
@@ -61,7 +62,7 @@ class InvoiceEntityIT {
                 .orderId(UUID.randomUUID())
                 .taxId("123")
                 .buyerName("Buyer")
-                .status("DRAFT")
+                .status(InvoiceStatus.DRAFT)
                 .items(List.of(
                         new InvoiceItemEmbeddable("Item1", 1, BigDecimal.TEN, BigDecimal.valueOf(23)),
                         new InvoiceItemEmbeddable("Item2", 2, BigDecimal.valueOf(20), BigDecimal.valueOf(8)),
@@ -90,7 +91,7 @@ class InvoiceEntityIT {
                 .orderId(UUID.randomUUID())
                 .taxId("123")
                 .buyerName("Buyer")
-                .status("ISSUED")
+                .status(InvoiceStatus.ISSUED)
                 .pdfContent(pdfContent)
                 .items(List.of())
                 .build();
@@ -114,7 +115,7 @@ class InvoiceEntityIT {
                 .orderId(UUID.randomUUID())
                 .taxId("123")
                 .buyerName("Original")
-                .status("DRAFT")
+                .status(InvoiceStatus.DRAFT)
                 .items(List.of())
                 .build();
 

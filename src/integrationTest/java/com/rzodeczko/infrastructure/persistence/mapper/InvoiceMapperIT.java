@@ -76,7 +76,7 @@ class InvoiceMapperIT {
                 .taxId("123-456")
                 .buyerName("John Doe")
                 .externalId("ext-123")
-                .status("ISSUED")
+                .status(InvoiceStatus.ISSUED)
                 .items(items)
                 .createdAt(createdAt)
                 .build();

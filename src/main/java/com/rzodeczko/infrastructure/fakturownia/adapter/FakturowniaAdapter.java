@@ -188,7 +188,7 @@ public class FakturowniaAdapter implements TaxSystemPort {
         }
     }
 
-    private CreateInvoiceWrapperDto mapToRequest(Invoice invoice) {
+    CreateInvoiceWrapperDto mapToRequest(Invoice invoice) {
         LocalDate now = LocalDate.now();
 
         List<PositionDto> positions = invoice.getItems().stream()
