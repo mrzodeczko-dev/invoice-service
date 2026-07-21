@@ -39,7 +39,7 @@ class InvoiceMapperSpec extends Specification {
         entity.orderId == orderId
         entity.taxId == "TAX-1"
         entity.buyerName == "Buyer Co"
-        entity.status == "ISSUED"
+        entity.status == InvoiceStatus.ISSUED
         entity.externalId == "ext-1"
         entity.createdAt == now
         entity.items.size() == 1
@@ -78,7 +78,7 @@ class InvoiceMapperSpec extends Specification {
 
         then:
         entity.externalId == null
-        entity.status == "DRAFT"
+        entity.status == InvoiceStatus.DRAFT
     }
 
     // --- toDomain ---
@@ -91,7 +91,7 @@ class InvoiceMapperSpec extends Specification {
                 .orderId(orderId)
                 .taxId("TAX-1")
                 .buyerName("Buyer Co")
-                .status("ISSUED")
+                .status(InvoiceStatus.ISSUED)
                 .externalId("ext-1")
                 .createdAt(now)
                 .items([new InvoiceItemEmbeddable("Widget", 2, new BigDecimal("19.99"), new BigDecimal("23"))])
@@ -122,7 +122,7 @@ class InvoiceMapperSpec extends Specification {
                 .orderId(orderId)
                 .taxId("TAX-1")
                 .buyerName("Buyer")
-                .status("DRAFT")
+                .status(InvoiceStatus.DRAFT)
                 .externalId(null)
                 .items([new InvoiceItemEmbeddable("Item", 1, BigDecimal.TEN, new BigDecimal("23"))])
                 .build()

@@ -54,7 +54,7 @@ class JpaInvoiceRepositoryAdapterSpec extends Specification {
         def existingEntity = InvoiceEntity.builder()
                 .id(invoiceId)
                 .orderId(orderId)
-                .status("DRAFT")
+                .status(InvoiceStatus.DRAFT)
                 .build()
         def savedInvoice = invoice
 
@@ -66,7 +66,7 @@ class JpaInvoiceRepositoryAdapterSpec extends Specification {
         def result = adapter.save(invoice)
 
         then:
-        existingEntity.status == "ISSUED"
+        existingEntity.status == InvoiceStatus.ISSUED
         existingEntity.externalId == "ext-1"
         result == savedInvoice
     }
